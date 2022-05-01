@@ -119,14 +119,17 @@ class _HomePageState extends State<HomePage> {
         child: Icon(Icons.add),
         onPressed: () async {
           // + 버튼 클릭시 버킷 생성 페이지로 이동
-          String? job = await Navigator.push(
+          Map<String, String>? bucket = await Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => CreatePage()),
           );
 
-          if (job != null) {
+          if (bucket != null) {
+            final job = bucket['job']!;
+            final desc = bucket['desc']!;
+
             setState(() {
-              bucketList.add(Bucket(job, false)); // 버킷 리스트에 추가
+              bucketList.add(Bucket(job, desc, false));
             });
           }
         },
@@ -144,7 +147,7 @@ class CreatePage extends StatefulWidget {
 }
 
 class _CreatePageState extends State<CreatePage> {
-  String? error; // 경고 메세지
+  String? error;
 
   final textController = TextEditingController(text: '');
   final textController2 = TextEditingController(text: '');
@@ -185,7 +188,7 @@ class _CreatePageState extends State<CreatePage> {
               ),
             ),
             SizedBox(height: 32),
-            // 추// 추가하기 버튼
+            //추가하기 버튼
             SizedBox(
               width: double.infinity,
               height: 48,
@@ -198,27 +201,34 @@ class _CreatePageState extends State<CreatePage> {
                 ),
                 onPressed: () {
                   String job = textController.text; // 추가하기 버튼 클릭시
-                  String desc = textController2.text; // 추가하기 버튼 클릭시
+                  String desc = textController2.text;
+                  // 추가하기 버튼 클릭시
                   if (job.isEmpty) {
                     setState(() {
                       error = "내용을 입력해주세요."; // 내용이 없는 경우 에러 메세지
                     });
+                    return;
                   } else {
                     setState(() {
                       error = null; // 내용이 있는 경우 에러 메세지 숨기기
                     });
-                    Navigator.pop(context, job); // job 변수를 반환하며 화면을 종료합니다.
+                    // job 변수를 반환하며 화면을 종료합니다.
                   }
                   if (desc.isEmpty) {
                     setState(() {
                       error = "내용을 입력해주세요."; // 내용이 없는 경우 에러 메세지
                     });
+                    return;
                   } else {
                     setState(() {
                       error = null; // 내용이 있는 경우 에러 메세지 숨기기
                     });
-                    Navigator.pop(context, job); // job 변수를 반환하며 화면을 종료합니다.
                   }
+                  final Map<String, String> bucket = {
+                    'job': job,
+                    'desc': desc,
+                  };
+                  Navigator.of(context).pop(bucket);
                 },
               ),
             ),
