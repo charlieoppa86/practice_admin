@@ -19,10 +19,11 @@ class MyApp extends StatelessWidget {
 
 /// 버킷 클래스
 class Bucket {
-  String job; // 할 일
+  String job;
+  String desc; // 할 일
   bool isDone; // 완료 여부
 
-  Bucket(this.job, this.isDone); // 생성자
+  Bucket(this.job, this.desc, this.isDone); // 생성자
 }
 
 /// 홈 페이지
@@ -96,6 +97,7 @@ class _HomePageState extends State<HomePage> {
                           : TextDecoration.none,
                     ),
                   ),
+                  subtitle: Text(bucket.desc),
                   // 삭제 아이콘 버튼
                   trailing: IconButton(
                     icon: Icon(CupertinoIcons.delete),
@@ -121,6 +123,7 @@ class _HomePageState extends State<HomePage> {
             context,
             MaterialPageRoute(builder: (_) => CreatePage()),
           );
+
           if (job != null) {
             setState(() {
               bucketList.add(Bucket(job, false)); // 버킷 리스트에 추가
@@ -144,6 +147,7 @@ class _CreatePageState extends State<CreatePage> {
   String? error; // 경고 메세지
 
   final textController = TextEditingController(text: '');
+  final textController2 = TextEditingController(text: '');
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +176,16 @@ class _CreatePageState extends State<CreatePage> {
               ),
             ),
             SizedBox(height: 32),
-            // 추가하기 버튼
+            TextField(
+              controller: textController2,
+              autofocus: true,
+              decoration: InputDecoration(
+                hintText: "상세 설명을 추가하세요",
+                errorText: error,
+              ),
+            ),
+            SizedBox(height: 32),
+            // 추// 추가하기 버튼
             SizedBox(
               width: double.infinity,
               height: 48,
@@ -185,7 +198,18 @@ class _CreatePageState extends State<CreatePage> {
                 ),
                 onPressed: () {
                   String job = textController.text; // 추가하기 버튼 클릭시
+                  String desc = textController2.text; // 추가하기 버튼 클릭시
                   if (job.isEmpty) {
+                    setState(() {
+                      error = "내용을 입력해주세요."; // 내용이 없는 경우 에러 메세지
+                    });
+                  } else {
+                    setState(() {
+                      error = null; // 내용이 있는 경우 에러 메세지 숨기기
+                    });
+                    Navigator.pop(context, job); // job 변수를 반환하며 화면을 종료합니다.
+                  }
+                  if (desc.isEmpty) {
                     setState(() {
                       error = "내용을 입력해주세요."; // 내용이 없는 경우 에러 메세지
                     });
